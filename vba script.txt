@@ -1,0 +1,89 @@
+Sub ChallengeHomework2()
+
+    
+    Dim ws As Worksheet
+    For Each ws In ThisWorkbook.Worksheets
+
+Dim tickersymbol As String
+
+Dim I As Long
+Dim TotalVolume As LongLong
+
+Dim Summary_Table_Row As Integer
+
+    Summary_Table_Row = 2
+    
+    ws.Range("I1") = "Ticker"
+    ws.Range("J1") = "Yearly Change"
+    ws.Range("K1") = "Percent Change"
+    ws.Range("L1") = "Total Stock Volume"
+    ws.Range("K:K").NumberFormat = "0.00%"
+    ws.Range("O2").Value = "Greatest % Increase"
+    ws.Range("O3").Value = "Greatest % Decrease"
+    ws.Range("O4").Value = "Greatest Total Volume"
+    ws.Range("P1").Value = "Ticker"
+    ws.Range("Q1").Value = "Value"
+    
+    For I = 2 To 753001
+
+    If (Cells(I, 1).Value) <> (Cells(I + 1, 1).Value) Then
+        tickersymbol = ws.Cells(I, 1).Value
+        ws.Range("I" & Summary_Table_Row).Value = tickersymbol
+        TotalVolume = TotalVolume + ws.Cells(I, 7).Value
+        ws.Range("L" & Summary_Table_Row).Value = TotalVolume
+        lastRows = I - ws.Application.WorksheetFunction.Match(Cells(I, 1).Value, Range("A1:A" & I), 0) + 2
+        TotalOpen = ws.Cells(I - lastRows + 2, 3).Value
+        TotalClose = ws.Cells(I, 6).Value
+        ws.Range("j" & Summary_Table_Row).Value = TotalClose - TotalOpen
+         ws.Range("k" & Summary_Table_Row).Value = TotalClose / TotalOpen - 1
+        Summary_Table_Row = Summary_Table_Row + 1
+        TotalVolume = 0
+        
+            
+    Else
+    
+        TotalVolume = TotalVolume + Cells(I, 7)
+    
+    End If
+    
+    Next I
+    
+        Dim maxpercentchange As Double
+        Dim minpercentchange As Double
+        Dim greatesttotalvolume As LongLong
+            maxpercentchange = WorksheetFunction.Max(ws.Range("K2:K3001"))
+            ws.Range("Q2").Value = maxpercentchange
+            minpercentchange = WorksheetFunction.Min(ws.Range("K2:K3001"))
+            ws.Range("Q3").Value = minpercentchange
+            greatesttotalvolume = WorksheetFunction.Max(ws.Range("L2:L3001"))
+            ws.Range("Q4").Value = greatesttotalvolume
+            ws.Range("K2:K3001").NumberFormat = "0.00%"
+            ws.Range("Q2:Q3").NumberFormat = "0.00%"
+    For I = 2 To 3001
+    
+    If Cells(I, 11).Value = maxpercentchange Then
+        ws.Range("P2").Value = Cells(I, 9).Value
+    End If
+    
+    If Cells(I, 11).Value = minpercentchange Then
+        ws.Range("P3").Value = Cells(I, 9).Value
+    End If
+    
+    If Cells(I, 12).Value = greatesttotalvolume Then
+        ws.Range("P4").Value = Cells(I, 9).Value
+    End If
+    
+    If (Cells(I, 11).Value < 0) Then
+        ws.Cells(I, 10).Interior.ColorIndex = 3
+    Else
+        ws.Cells(I, 10).Interior.ColorIndex = 4
+    End If
+    
+    Next I
+    
+        ws.Range("A:Q").Columns.AutoFit
+   
+Next ws
+
+End Sub
+      
